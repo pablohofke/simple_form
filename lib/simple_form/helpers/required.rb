@@ -11,16 +11,17 @@ module SimpleForm
       def attribute_required?
         @required
       end
-
+      
+      # required_by_default has to take precedence over the validations
       def calculate_required
-        if !options[:required].nil?
-          options[:required]
-        elsif has_validators?
-          (attribute_validators + reflection_validators).any? do |v|
-            v.kind == :presence && valid_validator?(v)
-          end
-        else
+        if !attribute_required_by_default?
           attribute_required_by_default?
+        elsif !options[:required].nil?
+          options[:required]
+        else has_validators?
+            (attribute_validators + reflection_validators).any? do |v|
+              v.kind == :presence && valid_validator?(v)
+            end
         end
       end
 
